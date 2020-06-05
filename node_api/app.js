@@ -26,6 +26,7 @@ const postRoutes = require('./routes/post');
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(expressValidator());
+
 app.use('/', postRoutes);
 
 const port = process.env.PORT || 8080;
