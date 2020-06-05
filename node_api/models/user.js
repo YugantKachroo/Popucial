@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
@@ -44,6 +43,9 @@ userSchema
   });
 
 userSchema.methods = {
+  authenticate: function (text) {
+    return this.encryptPassword(text) === this.hashed_password;
+  },
   encryptPassword: function (password) {
     if (!password) return '';
     try {
