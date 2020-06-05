@@ -22,12 +22,14 @@ mongoose.connection.on('error', (err) => {
 });
 
 const postRoutes = require('./routes/post');
+const authRoutes = require('./routes/auth');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(expressValidator());
 
 app.use('/', postRoutes);
+app.use('/', authRoutes);
 
 const port = process.env.PORT || 8080;
 
