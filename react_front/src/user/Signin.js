@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
+import { Redirect } from 'react-router-dom';
 
-class Signup extends Component {
+class Signin extends Component {
   constructor() {
     super();
     this.state = {
-      name: '',
       email: '',
       password: '',
       error: '',
-      open: false,
+      redirect: false,
     };
   }
 
@@ -18,32 +18,34 @@ class Signup extends Component {
     this.setState({ error: '' });
   };
 
+  authenticate(jwt, next) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('jwt', JSON.stringify(jwt));
+      next();
+    }
+  }
+
   clickSubmit = (event) => {
     event.preventDefault();
-    const { name, email, password } = this.state;
+    const { email, password } = this.state;
     const user = {
-      name,
       email,
       password,
     };
 
-    this.signup(user).then((data) => {
+    this.signin(user).then((data) => {
       if (data.error) {
         this.setState({ error: data.error });
       } else {
-        this.setState({
-          name: '',
-          email: '',
-          password: '',
-          error: '',
-          open: true,
+        this.authenticate(data, () => {
+          this.setState({ redirect: true });
         });
       }
     });
   };
 
-  signup = (user) => {
-    return fetch('http://localhost:8080/signup', {
+  signin = (user) => {
+    return fetch('http://localhost:8080/signin', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -58,35 +60,24 @@ class Signup extends Component {
   };
 
   render() {
-    const { name, email, password, error, open } = this.state;
+    const { email, password, error, redirect } = this.state;
+    if (redirect) {
+      return <Redirect to='/' />;
+    }
+
     return (
       <div className='container'>
         <Spinner animation='border' role='status'>
           <span className='sr-only'>Loading...</span>
         </Spinner>
-        <h4 className='mt-5 mb-5'>Signup</h4>
+        <h4 className='mt-5 mb-5'>Sign In</h4>
         <div
           className='alert alert-danger'
           style={{ display: error ? '' : 'none' }}
         >
           {error}
         </div>
-        <div
-          className='alert alert-info'
-          style={{ display: open ? '' : 'none' }}
-        >
-          New account is successfully created. Please Sign in
-        </div>
         <form>
-          <div className='form-group'>
-            <label className='text-muted'>Name</label>
-            <input
-              onChange={this.handleChange('name')}
-              type='text'
-              className='form-control'
-              value={name}
-            />
-          </div>
           <div className='form-group'>
             <label className='text-muted'>Email</label>
             <input
@@ -117,4 +108,4 @@ class Signup extends Component {
   }
 }
 
-export default Signup;
+export default Signin;
