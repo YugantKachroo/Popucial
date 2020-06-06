@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 import { Redirect } from 'react-router-dom';
+import Spinner from '../Spinner';
 
 class Signin extends Component {
   constructor() {
@@ -10,6 +10,7 @@ class Signin extends Component {
       password: '',
       error: '',
       redirect: false,
+      loading: false,
     };
   }
 
@@ -26,6 +27,7 @@ class Signin extends Component {
   }
 
   clickSubmit = (event) => {
+    this.setState({ loading: true });
     event.preventDefault();
     const { email, password } = this.state;
     const user = {
@@ -35,7 +37,7 @@ class Signin extends Component {
 
     this.signin(user).then((data) => {
       if (data.error) {
-        this.setState({ error: data.error });
+        this.setState({ error: data.error, loading: false });
       } else {
         this.authenticate(data, () => {
           this.setState({ redirect: true });
@@ -60,16 +62,13 @@ class Signin extends Component {
   };
 
   render() {
-    const { email, password, error, redirect } = this.state;
+    const { email, password, error, redirect, loading } = this.state;
     if (redirect) {
       return <Redirect to='/' />;
     }
 
     return (
       <div className='container'>
-        <Spinner animation='border' role='status'>
-          <span className='sr-only'>Loading...</span>
-        </Spinner>
         <h4 className='mt-5 mb-5'>Sign In</h4>
         <div
           className='alert alert-danger'
@@ -77,32 +76,36 @@ class Signin extends Component {
         >
           {error}
         </div>
-        <form>
-          <div className='form-group'>
-            <label className='text-muted'>Email</label>
-            <input
-              onChange={this.handleChange('email')}
-              type='email'
-              className='form-control'
-              value={email}
-            />
-          </div>
-          <div className='form-group'>
-            <label className='text-muted'>Password</label>
-            <input
-              onChange={this.handleChange('password')}
-              type='password'
-              className='form-control'
-              value={password}
-            />
-          </div>
-          <button
-            onClick={this.clickSubmit}
-            className='btn btn-raised btn-primary'
-          >
-            Submit
-          </button>
-        </form>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <form>
+            <div className='form-group'>
+              <label className='text-muted'>Email</label>
+              <input
+                onChange={this.handleChange('email')}
+                type='email'
+                className='form-control'
+                value={email}
+              />
+            </div>
+            <div className='form-group'>
+              <label className='text-muted'>Password</label>
+              <input
+                onChange={this.handleChange('password')}
+                type='password'
+                className='form-control'
+                value={password}
+              />
+            </div>
+            <button
+              onClick={this.clickSubmit}
+              className='btn btn-raised btn-primary'
+            >
+              Submit
+            </button>
+          </form>
+        )}
       </div>
     );
   }

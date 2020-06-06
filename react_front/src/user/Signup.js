@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 
 class Signup extends Component {
   constructor() {
@@ -61,9 +60,6 @@ class Signup extends Component {
     const { name, email, password, error, open } = this.state;
     return (
       <div className='container'>
-        <Spinner animation='border' role='status'>
-          <span className='sr-only'>Loading...</span>
-        </Spinner>
         <h4 className='mt-5 mb-5'>Signup</h4>
         <div
           className='alert alert-danger'
