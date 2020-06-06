@@ -1,37 +1,12 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
+import { signout, isAuthenticated } from '../auth';
 
 const isActive = (history, path) => {
   if (history.location.pathname === path) {
     return { color: 'black' };
   }
   return { color: 'white' };
-};
-
-export const isAuthenticated = () => {
-  if (typeof window == 'undefined') {
-    return false;
-  }
-  if (localStorage.getItem('jwt')) {
-    return JSON.parse(localStorage.getItem('jwt'));
-  } else {
-    return false;
-  }
-};
-
-export const signout = (next) => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('jwt');
-  }
-  next();
-  return fetch('http://localhost/signout', {
-    method: 'GET',
-  })
-    .then((response) => {
-      console.log('signout', response);
-      return response.json();
-    })
-    .catch((err) => console.log(err));
 };
 
 const Menu = ({ history }) => (
@@ -77,6 +52,12 @@ const Menu = ({ history }) => (
             >
               Sign Out
             </a>
+          </li>
+          <li
+            className='nav-item'
+            style={{ cursor: 'pointer', color: 'white' }}
+          >
+            <a className='nav-link'>{isAuthenticated().user.name}</a>
           </li>
         </>
       )}
