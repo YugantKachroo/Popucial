@@ -6,6 +6,7 @@ const {
   postById,
   isPoster,
   deletePost,
+  updatePost,
 } = require('../controllers/post');
 const { requireSignin } = require('../controllers/auth');
 const { createPostValidator } = require('../validator/index');
@@ -21,7 +22,7 @@ router.post(
 );
 
 router.get('/post/by/:userId', requireSignin, postByUser);
-
+router.put('/post/:postId', requireSignin, isPoster, updatePost);
 router.delete('/post/:postId', requireSignin, isPoster, deletePost);
 
 router.param('userId', userById);
