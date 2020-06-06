@@ -32,7 +32,7 @@ exports.userSignUpValidator = (req, res, next) => {
       'Password must contain atleast 6 characters including a number'
     )
     .matches(/\d/)
-    .withMessage('Password must contain a numnber');
+    .withMessage('Password must contain a number');
 
   const errors = req.validationErrors();
 
