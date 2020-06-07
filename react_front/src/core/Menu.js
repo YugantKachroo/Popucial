@@ -48,6 +48,7 @@ const Menu = ({ history }) => (
           </li>
         </>
       )}
+
       {isAuthenticated() && (
         <>
           <li className='nav-item'>
