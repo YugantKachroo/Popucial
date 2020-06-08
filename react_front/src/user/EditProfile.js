@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { read, update } from './apiUser';
 import { Redirect } from 'react-router-dom';
+import Spinner from '../Spinner';
 
 class EditProfile extends Component {
   constructor() {
@@ -13,6 +14,7 @@ class EditProfile extends Component {
       password: '',
       redirecttoprofile: false,
       error: '',
+      loading: false,
     };
   }
   init = (userId) => {
@@ -63,13 +65,8 @@ class EditProfile extends Component {
 
   clickSubmit = (event) => {
     event.preventDefault();
+    this.setState({ loading: true });
     if (this.isValid()) {
-      const { name, email, password } = this.state;
-      const user = {
-        name,
-        email,
-        password: password || undefined,
-      };
       const userId = this.props.match.params.userId;
       const token = isAuthenticated().token;
       update(userId, token, this.userData).then((data) => {
@@ -129,7 +126,15 @@ class EditProfile extends Component {
   );
 
   render() {
-    const { id, name, email, password, redirecttoprofile, error } = this.state;
+    const {
+      id,
+      name,
+      email,
+      password,
+      redirecttoprofile,
+      error,
+      loading,
+    } = this.state;
 
     if (redirecttoprofile) {
       return <Redirect to={`/user/${id}`} />;
@@ -143,6 +148,7 @@ class EditProfile extends Component {
           style={{ display: error ? '' : 'none' }}
         >
           {error}
+          {loading ? <Spinner /> : ''}
         </div>
         {this.signupForm(name, email, password)}
       </div>
