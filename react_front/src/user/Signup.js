@@ -59,7 +59,7 @@ class Signup extends Component {
           style={{ display: open ? '' : 'none' }}
         >
           New account is successfully created. Please{' '}
-          <Link to='/sign'>Sign In</Link>
+          <Link to='/signin'>Sign In</Link>
         </div>
         <form>
           <div className='form-group'>

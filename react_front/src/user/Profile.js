@@ -64,7 +64,7 @@ class Profile extends Component {
                 >
                   Edit Profile
                 </Link>
-                <DeleteUser />
+                <DeleteUser userId={user._id} />
               </div>
             )}
           </div>
