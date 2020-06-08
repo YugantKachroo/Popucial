@@ -52,7 +52,7 @@ const Menu = ({ history }) => (
       {isAuthenticated() && (
         <>
           <li className='nav-item'>
-            <a
+            <span
               className='nav-link'
               style={
                 (isActive(history, '/signup'),
@@ -61,7 +61,7 @@ const Menu = ({ history }) => (
               onClick={() => signout(() => history.push('/'))}
             >
               Sign Out
-            </a>
+            </span>
           </li>
           <li className='nav-item'>
             <Link
