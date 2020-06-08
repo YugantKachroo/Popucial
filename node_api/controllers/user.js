@@ -1,5 +1,5 @@
-const User = require('../models/user');
 const _ = require('lodash');
+const User = require('../models/user');
 const formidable = require('formidable');
 const fs = require('fs');
 
@@ -42,14 +42,21 @@ exports.getUser = (req, res) => {
 
 exports.updateUser = (req, res, next) => {
   let form = new formidable.IncomingForm();
+  // console.log("incoming form data: ", form);
   form.keepExtensions = true;
   form.parse(req, (err, fields, files) => {
     if (err) {
-      return res.status(400).json({ error: 'The photo could not be uploaded' });
+      return res.status(400).json({
+        error: 'Photo could not be uploaded',
+      });
     }
+    // save user
     let user = req.profile;
+    // console.log("user in update: ", user);
     user = _.extend(user, fields);
+
     user.updated = Date.now();
+    // console.log("USER FORM DATA UPDATE: ", user);
 
     if (files.photo) {
       user.photo.data = fs.readFileSync(files.photo.path);
@@ -58,14 +65,60 @@ exports.updateUser = (req, res, next) => {
 
     user.save((err, result) => {
       if (err) {
-        return res.status(400).json({ error: err });
+        return res.status(400).json({
+          error: err,
+        });
       }
-      user.salt = undefined;
       user.hashed_password = undefined;
-      res.json({ user });
+      user.salt = undefined;
+      // console.log("user after update with formdata: ", user);
+      res.json(user);
     });
   });
 };
+
+exports.userPhoto = (req, res, next) => {
+  if (req.profile.photo.data) {
+    res.set(('Content-Type', req.profile.photo.contentType));
+    return res.send(req.profile.photo.data);
+  }
+  next();
+};
+
+// exports.updateUser = (req, res, next) => {
+//   let form = new formidable.IncomingForm();
+//   form.keepExtensions = true;
+//   form.parse(req, (err, fields, files) => {
+//     if (err) {
+//       return res.status(400).json({ error: 'The photo could not be uploaded' });
+//     }
+//     let user = req.profile;
+//     user = _.extend(user, fields);
+//     user.updated = Date.now();
+
+//     if (files.photo) {
+//       user.photo.data = fs.readFileSync(files.photo.path);
+//       user.photo.contentType = files.photo.type;
+//     }
+
+//     user.save((err, result) => {
+//       if (err) {
+//         return res.status(400).json({ error: err });
+//       }
+//       user.salt = undefined;
+//       user.hashed_password = undefined;
+//       res.json(user);
+//     });
+//   });
+// };
+
+// exports.userPhoto = (req, res, next) => {
+//   if (req.profile.photo.data) {
+//     res.set('Content-Type', req.profile.photo.contentType);
+//     return res.send(req.profile.user.data);
+//   }
+//   next();
+// };
 
 exports.deleteUser = (req, res) => {
   let user = req.profile;
