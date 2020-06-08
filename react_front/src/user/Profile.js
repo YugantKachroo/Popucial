@@ -3,6 +3,7 @@ import { isAuthenticated } from '../auth';
 import { Link, Redirect } from 'react-router-dom';
 import DefaultProfile from '../images/avatar.jpg';
 import { read } from './apiUser';
+import DeleteUser from './DeleteUser';
 
 class Profile extends Component {
   constructor() {
@@ -28,6 +29,10 @@ class Profile extends Component {
     const userId = this.props.match.params.userId;
     this.init(userId);
   }
+  componentWillReceiveProps(props) {
+    const userId = props.match.params.userId;
+    this.init(userId);
+  }
   render() {
     const { redirect, user } = this.state;
     if (redirect) {
@@ -43,7 +48,7 @@ class Profile extends Component {
               className='card-img-top'
               src={DefaultProfile}
               alt={user.name}
-              style={{ width: '100%', height: '15vw', objectFit: 'cover' }}
+              style={{ width: '80%', height: '16vw', objectFit: 'cover' }}
             />
           </div>
           <div className='col-md-6'>
@@ -52,16 +57,14 @@ class Profile extends Component {
               <p>{`Joined ${new Date(user.created).toDateString()}`}</p>
             </div>
             {isAuthenticated().user && isAuthenticated().user._id === user._id && (
-              <div className='d-inline-block'>
+              <div className='d-inline-block mt-5'>
                 <Link
                   to={`/user/edit/${user._id}`}
                   className='btn btn-raised btn-success mr-5'
                 >
                   Edit Profile
                 </Link>
-                <button className='btn btn-raised btn-danger'>
-                  Delete Profile
-                </button>
+                <DeleteUser />
               </div>
             )}
           </div>
