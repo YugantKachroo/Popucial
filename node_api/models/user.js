@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
   update: Date,
+  photo: {
+    type: Buffer,
+    contentType: String,
+  },
 });
 
 //virtual field
