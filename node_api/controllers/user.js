@@ -46,7 +46,6 @@ exports.getUser = (req, res) => {
 
 exports.updateUser = (req, res, next) => {
   let form = new formidable.IncomingForm();
-  // console.log("incoming form data: ", form);
   form.keepExtensions = true;
   form.parse(req, (err, fields, files) => {
     if (err) {
@@ -54,14 +53,10 @@ exports.updateUser = (req, res, next) => {
         error: 'Photo could not be uploaded',
       });
     }
-    // save user
     let user = req.profile;
-    // console.log("user in update: ", user);
     user = _.extend(user, fields);
 
     user.updated = Date.now();
-    // console.log("USER FORM DATA UPDATE: ", user);
-
     if (files.photo) {
       user.photo.data = fs.readFileSync(files.photo.path);
       user.photo.contentType = files.photo.type;
@@ -75,7 +70,6 @@ exports.updateUser = (req, res, next) => {
       }
       user.hashed_password = undefined;
       user.salt = undefined;
-      // console.log("user after update with formdata: ", user);
       res.json(user);
     });
   });
@@ -111,19 +105,6 @@ exports.addFollowing = (req, res, next) => {
   );
 };
 
-// exports.addFollowing = (req, res, next) => {
-//   User.findByIdAndUpdate(
-//     req.body.userId,
-//     { $push: { following: req.body.followId } },
-//     (err, result) => {
-//       if (err) {
-//         return res.status(400).json({ error: err });
-//       }
-//       next();
-//     }
-//   );
-// };
-
 exports.addFollower = (req, res) => {
   User.findByIdAndUpdate(
     req.body.followId,
@@ -143,24 +124,6 @@ exports.addFollower = (req, res) => {
       res.json(result);
     });
 };
-
-// exports.addFollower = (req, res) => {
-//   User.findByIdAndUpdate(
-//     req.body.followId,
-//     { $push: { followers: req.body.userId } },
-//     { new: true }
-//   )
-//     .populate('following', '_id name')
-//     .populate('followers', '_id name')
-//     .exec((err, result) => {
-//       if (err) {
-//         res.status(400).json({ error: err });
-//       }
-//       result.hashed_password = undefined;
-//       result.salt = undefined;
-//       res, json(result);
-//     });
-// };
 
 exports.removeFollowing = (req, res, next) => {
   User.findByIdAndUpdate(
@@ -185,10 +148,12 @@ exports.removeFollower = (req, res) => {
     .populate('followers', '_id name')
     .exec((err, result) => {
       if (err) {
-        res.status(400).json({ error: err });
+        return res.status(400).json({
+          error: err,
+        });
       }
       result.hashed_password = undefined;
       result.salt = undefined;
-      res, json(result);
+      res.json(result);
     });
 };
