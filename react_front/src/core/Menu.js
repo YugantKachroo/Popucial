@@ -63,6 +63,17 @@ const Menu = ({ history }) => (
               Sign Out
             </span>
           </li>
+
+          <li className='nav-item'>
+            <Link
+              to='/findpeople'
+              style={isActive(history, '/findpeople')}
+              className='nav-link'
+            >
+              Find Users
+            </Link>
+          </li>
+
           <li className='nav-item'>
             <Link
               to={`/user/${isAuthenticated().user._id}`}
