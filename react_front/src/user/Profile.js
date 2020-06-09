@@ -10,10 +10,19 @@ class Profile extends Component {
   constructor() {
     super();
     this.state = {
-      user: '',
+      user: { following: [], followers: [] },
       redirect: false,
+      following: false,
     };
   }
+
+  checkFollow = (user) => {
+    const jwt = isAuthenticated();
+    const match = user.followers.find((follower) => {
+      return follower._id === jwt.user._id;
+    });
+    return match;
+  };
 
   init = (userId) => {
     const token = isAuthenticated().token;
@@ -21,7 +30,8 @@ class Profile extends Component {
       if (data.error) {
         this.setState({ redirect: true });
       } else {
-        this.setState({ user: data });
+        let following = this.checkFollow(data);
+        this.setState({ user: data, following });
       }
     });
   };
@@ -75,7 +85,7 @@ class Profile extends Component {
                 <DeleteUser userId={user._id} />
               </div>
             ) : (
-              <FollowProfileButton />
+              <FollowProfileButton following={this.state.following} />
             )}
           </div>
         </div>
