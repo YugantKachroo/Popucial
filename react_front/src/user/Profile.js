@@ -4,6 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import DefaultProfile from '../images/avatar.jpg';
 import { read } from './apiUser';
 import DeleteUser from './DeleteUser';
+import FollowProfileButton from './FollowProfileButton';
 
 class Profile extends Component {
   constructor() {
@@ -62,7 +63,8 @@ class Profile extends Component {
               <p>Hello {user.name}</p>
               <p>{`Joined ${new Date(user.created).toDateString()}`}</p>
             </div>
-            {isAuthenticated().user && isAuthenticated().user._id === user._id && (
+            {isAuthenticated().user &&
+            isAuthenticated().user._id === user._id ? (
               <div className='d-inline-block mt-5'>
                 <Link
                   to={`/user/edit/${user._id}`}
@@ -72,6 +74,8 @@ class Profile extends Component {
                 </Link>
                 <DeleteUser userId={user._id} />
               </div>
+            ) : (
+              <FollowProfileButton />
             )}
           </div>
         </div>
