@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+const uuidv1 = require('uuid/v1');
 const crypto = require('crypto');
 const { ObjectId } = mongoose.Schema;
+const Post = require('./post');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -34,29 +35,44 @@ const userSchema = new mongoose.Schema({
   },
   following: [{ type: ObjectId, ref: 'User' }],
   followers: [{ type: ObjectId, ref: 'User' }],
+  resetPasswordLink: {
+    data: String,
+    default: '',
+  },
+  role: {
+    type: String,
+    default: 'subscriber',
+  },
 });
 
-//virtual field
+/**
+ * Virtual fields are additional fields for a given model.
+ * Their values can be set manually or automatically with defined functionality.
+ * Keep in mind: virtual properties (password) don’t get persisted in the database.
+ * They only exist logically and are not written to the document’s collection.
+ */
 
+// virtual field
 userSchema
   .virtual('password')
-
   .set(function (password) {
+    // create temporary variable called _password
     this._password = password;
-
-    this.salt = uuidv4();
-
+    // generate a timestamp
+    this.salt = uuidv1();
+    // encryptPassword()
     this.hashed_password = this.encryptPassword(password);
   })
-
   .get(function () {
     return this._password;
   });
 
+// methods
 userSchema.methods = {
-  authenticate: function (text) {
-    return this.encryptPassword(text) === this.hashed_password;
+  authenticate: function (plainText) {
+    return this.encryptPassword(plainText) === this.hashed_password;
   },
+
   encryptPassword: function (password) {
     if (!password) return '';
     try {
@@ -69,4 +85,11 @@ userSchema.methods = {
     }
   },
 };
+
+// pre middleware
+userSchema.pre('remove', function (next) {
+  Post.remove({ postedBy: this._id }).exec();
+  next();
+});
+
 module.exports = mongoose.model('User', userSchema);
